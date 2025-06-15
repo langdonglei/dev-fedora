@@ -65,7 +65,7 @@ echo 'protected-mode no' >> /etc/redis/redis.conf
 
 # php
 dnf install -y https://rpms.remirepo.net/fedora/remi-release-40.rpm
-for i in 73 74 80
+for i in 74 80
 do
     dnf install -y \
         php${i}-php-cli \
