@@ -1,22 +1,67 @@
 set -ex
 
 # ssh
-dnf install -y openssh-server sshpass passwd
+dnf install -y openssh-server
 /usr/bin/ssh-keygen -A
-echo root:root | chpasswd
-sed -i 's|GSSAPIAuthentication yes|GSSAPIAuthentication no|' /etc/ssh/sshd_config
-sed -i 's|#UseDNS yes|UseDNS no|' /etc/ssh/sshd_config
-sed -i 's|#PermitRootLogin yes|PermitRootLogin yes|' /etc/ssh/sshd_config
+echo 'root:root' | chpasswd
+echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config
 
 # nginx
 dnf install -y nginx
-#sed -i 's|root /www|root /www/public|' /etc/nginx/conf.d/default.conf
-#sed -i 's|user  nginx|user  root|'     /etc/nginx/nginx.conf
+cat > /etc/nginx/nginx.conf << 'EOF'
+user root;
+worker_processes auto;
+pcre_jit on;
+error_log /var/log/nginx/error.log warn;
+include /etc/nginx/modules/*.conf;
+events {
+	worker_connections 1024;
+}
+http {
+	include /etc/nginx/mime.types;
+	default_type application/octet-stream;
+	server_tokens off;
+	client_max_body_size 111m;
+	sendfile on;
+	tcp_nopush on;
+	ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;
+	ssl_prefer_server_ciphers on;
+	ssl_session_cache shared:SSL:2m;
+	ssl_session_timeout 1h;
+	ssl_session_tickets off;
+	gzip_vary on;
+	map $http_upgrade $connection_upgrade {
+		default upgrade;
+		'' close;
+	}
+	log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+			'$status $body_bytes_sent "$http_referer" '
+			'"$http_user_agent" "$http_x_forwarded_for"';
+	access_log /var/log/nginx/access.log main;
+    server {
+        server_name dev;
+        root /www/public;
+        index index.html index.php;
+        location / {
+            if (!-e $request_filename) {
+                rewrite ^(.*)$ /index.php?s=$1 last;
+            }
+        }
+        location ~ \.php {
+        include fastcgi_params;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_split_path_info ^(.+\.php)(.*)$;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        }
+    }
+}
+EOF
 
 # redis
 dnf install -y redis
-#sed -i 's|bind 127.0.0.1|bind 0.0.0.0|g' /etc/redis.conf
-#sed -i 's|protected-mode yes|protected-mode no|g' /etc/redis.conf
+echo 'bind * -::*' >> /etc/redis/redis.conf
+echo 'protected-mode no' >> /etc/redis/redis.conf
 
 # php
 dnf install -y https://rpms.remirepo.net/fedora/remi-release-42.rpm

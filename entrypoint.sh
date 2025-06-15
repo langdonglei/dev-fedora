@@ -5,4 +5,4 @@ nginx
 php-fpm -D -R
 
 # 启动 redis
-redis-server /etc/redis.conf
+redis-server /etc/redis/redis.conf
