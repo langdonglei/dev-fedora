@@ -97,3 +97,5 @@ EOF
 EOF
     sed -i 's|apache|root|g'                                            /etc/opt/remi/php${i}/php-fpm.d/www.conf
 done
+
+dnf clean all
