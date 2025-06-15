@@ -64,6 +64,8 @@ echo 'bind * -::*' >> /etc/redis/redis.conf
 echo 'protected-mode no' >> /etc/redis/redis.conf
 
 # php
+curl https://packages.microsoft.com/config/rhel/7/prod.repo > /etc/yum.repos.d/ms.repo
+ACCEPT_EULA=Y dnf install -y msodbcsql17
 dnf install -y https://rpms.remirepo.net/fedora/remi-release-40.rpm
 for i in 74 80
 do
