@@ -1,8 +1,8 @@
 set -ex
 
 # php
-curl https://packages.microsoft.com/config/rhel/7/prod.repo > /etc/yum.repos.d/ms.repo
-ACCEPT_EULA=Y dnf install -y msodbcsql17
+curl https://packages.microsoft.com/config/rhel/9/prod.repo > /etc/yum.repos.d/ms.repo
+ACCEPT_EULA=Y dnf install -y msodbcsql18
 dnf install -y https://rpms.remirepo.net/fedora/remi-release-40.rpm
 for i in 74 80
 do
