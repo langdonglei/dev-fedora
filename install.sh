@@ -97,6 +97,3 @@ dnf install -y openssh-server
 /usr/bin/ssh-keygen -A
 echo 'root:root' | chpasswd
 echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config
-
-# over
-dnf clean all
