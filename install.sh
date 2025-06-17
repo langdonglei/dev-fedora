@@ -47,6 +47,8 @@ events {
 }
 http {
 	include /etc/nginx/mime.types;
+	types_hash_max_size: 1024;
+    types_hash_bucket_size: 64;
 	default_type application/octet-stream;
 	server_tokens off;
 	client_max_body_size 111m;
