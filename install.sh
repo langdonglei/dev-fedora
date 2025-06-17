@@ -19,6 +19,7 @@ do
         php${i}-php-swoole \
         php${i}-php-process \
         php${i}-php-sodium \
+        php${i}-php-sqlsrv \
         php${i}-php-pecl-xdebug3
     cat >> /etc/opt/remi/php${i}/php.ini << EOF
     error_reporting=E_ALL
@@ -29,7 +30,6 @@ EOF
     cat >> /etc/opt/remi/php${i}/php.d/15-xdebug.ini << EOF
     xdebug.mode=debug
     xdebug.client_host=host.docker.internal
-    xdebug.log=/tpm/xdebug.log
 EOF
     sed -i 's|apache|root|g'                                            /etc/opt/remi/php${i}/php-fpm.d/www.conf
 done
